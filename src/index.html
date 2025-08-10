@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solana Name Service Registration</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="logo">SNS Registry</h1>
+            <div class="header-controls">
+                <!-- Network Switcher -->
+                <div class="network-switcher">
+                    <label for="networkSelect">Network:</label>
+                    <select id="networkSelect" class="network-select">
+                        <option value="mainnet">Mainnet</option>
+                        <option value="devnet">Devnet</option>
+                    </select>
+                    <div id="networkStatus" class="network-status">
+                        <span class="status-dot"></span>
+                        <span class="status-text">Mainnet</span>
+                    </div>
+                </div>
+                
+                <div class="wallet-section">
+                    <div id="walletBalance" class="wallet-balance hidden">
+                        <span>Balance: <span id="balanceAmount">0</span> SOL</span>
+                    </div>
+                    <button id="connectWallet" class="btn btn-primary">Connect Wallet</button>
+                    <button id="requestAirdrop" class="btn btn-secondary hidden">Get Test SOL</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Admin Panel -->
+<section id="adminPanel" class="admin-panel hidden">
+  <h2>Admin Panel</h2>
+  <div class="form-group">
+    <label for="feeInput">Platform Fee (SOL):</label>
+    <input type="number" id="feeInput" step="0.001">
+  </div>
+  <button id="saveFeeBtn" class="btn btn-primary">Save Fee</button>
+
+  <h3>Recent Registrations</h3>
+  <table id="registrationsTable" class="registrations-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Domain</th>
+        <th>User</th>
+        <th>Network</th>
+        <th>Signature</th>
+        <th>Time</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</section>
+
+
+        <main class="main">
+            <div class="hero">
+                <h2>Register Your .sol Domain</h2>
+                <p>Secure your unique identity on the Solana blockchain - One-time purchase, yours forever</p>
+            </div>
+
+
+
+            <div class="search-section">
+                <div class="search-container">
+                    <input 
+                        type="text" 
+                        id="domainInput" 
+                        placeholder="Enter your desired domain name"
+                        maxlength="32"
+                    >
+                    <span class="domain-suffix">.sol</span>
+                    <button id="checkAvailability" class="btn btn-secondary">
+                        <span class="button-text">Check</span>
+                        <div class="button-spinner hidden"></div>
+                    </button>
+                </div>
+                <div id="searchResults" class="search-results hidden"></div>
+            </div>
+
+            <div id="registrationForm" class="registration-form hidden">
+                <div class="form-header">
+                    <h3>Complete Your Registration</h3>
+                    <p class="form-subtitle">One-time purchase - Own your domain permanently</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="selectedDomain">Domain:</label>
+                    <input type="text" id="selectedDomain" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="paymentMethod">Payment Method:</label>
+                    <select id="paymentMethod">
+                        <option value="SOL">SOL</option>
+                        <option value="USDC">USDC</option>
+                    </select>
+                </div>
+
+                <div class="price-breakdown">
+                    
+                    <div class="price-row">
+                        <span>Domain Price:</span>
+                        <span id="domainPrice">0.05 SOL</span>
+                    </div>
+                    <!-- <div class="price-row platform-fee">
+                        <span>Platform Fee:</span>
+                        <span id="platformFee">0.08 SOL</span>
+                    </div> -->
+                    <div class="price-row">
+                        <span>Network Fee:</span>
+                        <span id="networkFee">~0.001 SOL</span>
+                    </div>
+                    <div class="price-row total">
+                        <span>Total Cost:</span>
+                        <span id="totalCost">0.131 SOL</span>
+                    </div>
+                    <div class="ownership-note">
+                        <span>✨ Own forever - No renewal fees</span>
+                    </div>
+                </div>
+
+                <button id="registerDomain" class="btn btn-primary btn-large">
+                    <span class="button-text">Register Domain</span>
+                    <div class="button-spinner hidden"></div>
+                </button>
+            </div>
+
+            <div id="transactionStatus" class="transaction-status hidden">
+                <div class="status-header">
+                    <h3>Transaction Status</h3>
+                </div>
+                <div class="status-content">
+                    <div class="status-step" id="step1">
+                        <div class="step-icon">1</div>
+                        <div class="step-text">
+                            <h4>Preparing Transaction</h4>
+                            <p>Creating domain registration transaction...</p>
+                        </div>
+                        <div class="step-status">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="status-step" id="step2">
+                        <div class="step-icon">2</div>
+                        <div class="step-text">
+                            <h4>Wallet Approval</h4>
+                            <p>Please approve the transaction in your wallet</p>
+                        </div>
+                        <div class="step-status"></div>
+                    </div>
+                    
+                    <div class="status-step" id="step3">
+                        <div class="step-icon">3</div>
+                        <div class="step-text">
+                            <h4>Processing</h4>
+                            <p>Transaction submitted to blockchain</p>
+                        </div>
+                        <div class="step-status"></div>
+                    </div>
+                    
+                    <div class="status-step" id="step4">
+                        <div class="step-icon">4</div>
+                        <div class="step-text">
+                            <h4>Confirmation</h4>
+                            <p>Domain registered successfully</p>
+                        </div>
+                        <div class="step-status"></div>
+                    </div>
+                    
+                    <div id="transactionDetails" class="transaction-details hidden">
+                        <h4>Registration Complete!</h4>
+                        <div class="detail-row">
+                            <span>Transaction Hash:</span>
+                            <a id="txHash" href="#" target="_blank" class="tx-link"></a>
+                        </div>
+                        <div class="detail-row">
+                            <span>Domain:</span>
+                            <span id="registeredDomain"></span>
+                        </div>
+                        <div class="detail-row">
+                            <span>Status:</span>
+                            <span id="txStatus" class="status-confirmed">Confirmed</span>
+                        </div>
+                        <div class="detail-row">
+                            <span>Ownership:</span>
+                            <span class="ownership-forever">Yours Forever ✨</span>
+                        </div>
+                        <button id="viewDomain" class="btn btn-secondary">Manage Domain</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="footer-content">
+                <p>&copy; 2024 SNS Registry. Built on Solana blockchain.</p>
+                <div class="footer-links">
+                    <a href="https://sns.id" class="footer-link" target="_blank">SNS.id</a>
+                    <a href="https://docs.bonfida.org/collection/an-introduction-to-the-solana-name-service" class="footer-link" target="_blank">Docs</a>
+                    <a href="https://explorer.solana.com" class="footer-link" target="_blank">Explorer</a>
+                </div>
+            </div>
+        </footer>
+
+        <div id="notification" class="notification hidden">
+            <div class="notification-icon"></div>
+            <span id="notificationMessage"></span>
+            <button id="closeNotification" class="close-btn">&times;</button>
+        </div>
+
+        <div id="loadingOverlay" class="loading-overlay hidden">
+            <div class="loading-content">
+                <div class="loading-spinner"></div>
+                <p id="loadingMessage">Processing...</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

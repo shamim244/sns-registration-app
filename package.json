@@ -1,0 +1,41 @@
+{
+  "name": "sns-registration-app",
+  "version": "1.0.0",
+  "description": "Solana Name Service (.sol domain) registration web application",
+  "main": "src/js/app.js",
+  "type": "module",
+  "scripts": {
+    "dev": "webpack serve --mode development",
+    "build": "webpack --mode production",
+    "start": "http-server dist -p 8080"
+  },
+  "dependencies": {
+    "@bonfida/sns-widget": "^1.0.1",
+    "@bonfida/spl-name-service": "^3.0.12",
+    "@solana/web3.js": "^1.91.6",
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "knex": "^3.1.0",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "copy-webpack-plugin": "^11.0.0",
+    "css-loader": "^6.11.0",
+    "html-webpack-plugin": "^5.6.3",
+    "http-server": "^14.1.1",
+    "style-loader": "^3.3.4",
+    "webpack": "^5.101.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.2"
+  },
+  "keywords": [
+    "solana",
+    "sns",
+    "blockchain",
+    "domain",
+    "web3"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}

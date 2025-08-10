@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Buy .sol Domain</title>
+  <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f0f2f5; display: flex; align-items: center; justify-content: center; height: 100vh; }
+    .card { background: #fff; padding: 24px; border-radius: 8px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); width: 320px; }
+    h2 { margin-bottom: 16px; font-size: 1.25rem; }
+    input, button { width: 100%; padding: 10px; margin-top: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; }
+    button { background: #9945ff; color: #fff; border: none; cursor: pointer; }
+    button:disabled { background: #ccc; cursor: not-allowed; }
+    .status { margin-top: 16px; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Buy Your .sol Domain</h2>
+    <input id="domainInput" placeholder="Enter domain (e.g. example)" maxlength="32" />
+    <button id="connectBtn">Connect Wallet</button>
+    <button id="buyBtn" disabled>Buy for 0.08 SOL</button>
+    <div class="status" id="status"></div>
+  </div>
+
+  <script>
+    const PLATFORM_FEE = 0.08 * solanaWeb3.LAMPORTS_PER_SOL;
+    let connection, walletPublicKey;
+
+    const connectBtn = document.getElementById('connectBtn');
+    const buyBtn     = document.getElementById('buyBtn');
+    const statusDiv  = document.getElementById('status');
+    const domainInput = document.getElementById('domainInput');
+
+    // Initialize Solana connection
+    connection = new solanaWeb3.Connection('https://api.devnet.solana.com', 'confirmed');
+
+    // Connect Wallet
+    connectBtn.addEventListener('click', async () => {
+      try {
+        if (!window.solana) throw new Error('Wallet not found');
+        const resp = await window.solana.connect();
+        walletPublicKey = resp.publicKey;
+        connectBtn.textContent = 'Wallet Connected';
+        connectBtn.disabled = true;
+        buyBtn.disabled = false;
+        statusDiv.textContent = 'Enter a domain and click Buy';
+      } catch (err) {
+        statusDiv.textContent = 'Connection failed: ' + err.message;
+      }
+    });
+
+    // Buy Domain (Platform Fee Only)
+    buyBtn.addEventListener('click', async () => {
+      const domain = domainInput.value.trim();
+      if (!domain) {
+        statusDiv.textContent = 'Please enter a domain name.';
+        return;
+      }
+      statusDiv.textContent = 'Preparing transaction...';
+      try {
+        // Create transfer to your wallet
+        const tx = new solanaWeb3.Transaction().add(
+          solanaWeb3.SystemProgram.transfer({
+            fromPubkey: walletPublicKey,
+            toPubkey: new solanaWeb3.PublicKey('YourWalletPublicKeyHere11111111111111'),
+            lamports: PLATFORM_FEE
+          })
+        );
+        tx.feePayer = walletPublicKey;
+        const { blockhash } = await connection.getLatestBlockhash();
+        tx.recentBlockhash = blockhash;
+
+        // Sign & send
+        const signed = await window.solana.signTransaction(tx);
+        const sig = await connection.sendRawTransaction(signed.serialize());
+        statusDiv.textContent = `Transaction sent: ${sig}`;
+        await connection.confirmTransaction(sig, 'confirmed');
+        statusDiv.textContent = `Success! You bought "${domain}.sol" for 0.08 SOL. Tx: ${sig}`;
+      } catch (err) {
+        statusDiv.textContent = 'Transaction failed: ' + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
