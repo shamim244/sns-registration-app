@@ -17,10 +17,6 @@ export class DomainManager {
     constructor(walletManager) {
         this.walletManager = walletManager;
         this.connection = walletManager.connection;
-
-        // 🚀 EASY TO UPDATE PLATFORM FEE - Change this value anytime
-
-        this.PLATFORM_FEE = 0.08; // Your platform fee in SOL
         
         // One-time pricing configuration (no yearly fees)
         this.pricing = {
